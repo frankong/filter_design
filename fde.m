@@ -1,4 +1,4 @@
-function x = filt_design(N, a, b, l, u)
+function x = fde(N, a, b, l, u)
 % Design a minimum energy zero-phase order-N filter
 % such that l < |X(exp(jw))| < u for a < w < b
 %
@@ -9,30 +9,30 @@ function x = filt_design(N, a, b, l, u)
 %       l - Lower bound
 %       u - Upper bound
 % Output:
-%       x - Designed order-N filter
+%       x - Order-N filter
 %
 % Example:
 %       Low pass filter with cutoff pi/2 and 1.0% passband ripple
 %       x = filt_design(20, -pi/2, pi/2, 0.99, 1.01);
 
 assert(length(a) == length(b) & length(b) == length(l) & length(l) == length(u));
-
 M = length(a);
 
+% Construct matrices
 A = amat(N);
 Bs = cell(M,1);
 for m = 1:M
     Bs{m} = bmat(N, a(m), b(m));
 end
-
 delta = sparse(N+1, 1, 1.0, 2*N+1, 1);
 
+% Solve
 cvx_begin SDP
-    variable X(N+1, N+1) hermitian
-    variable Fl(N+1, N+1, M) hermitian
-    variable Gl(N, N, M) hermitian
-    variable Fu(N+1, N+1, M) hermitian
-    variable Gu(N, N, M) hermitian
+    variable X(N+1, N+1)        hermitian
+    variable Fl(N+1, N+1, M)    hermitian
+    variable Gl(N, N, M)        hermitian
+    variable Fu(N+1, N+1, M)    hermitian
+    variable Gu(N, N, M)        hermitian
     minimize trace(X)
     subject to
         for m = 1:M
