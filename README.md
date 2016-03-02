@@ -1,9 +1,9 @@
 # Filter design using SDP
 
-This package transforms the one-dimensional filter design problem to a semidefinite program.
+This package solves the one-dimensional filter design problem via a semidefinite program formulation.
 The SDP is then solved using CVX. 
 
-## fdr
+## fdzr
 Design a zero-phase order-N filter that minimizes ripples
 
 Inputs:
@@ -17,7 +17,7 @@ Output:
       x - Order-N filter
 
 
-## fde
+## fdze
 Design a zero-phase order-N filter subject to bounded constraints
 
 Inputs:
