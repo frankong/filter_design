@@ -11,7 +11,7 @@ Inputs:
       N - Filter order
       a - Frequency bands start point
       b - Frequency bands end point
-      v - value at frequency bands
+      v - Values at frequency bands
 Output:
 
       x - Order-N filter

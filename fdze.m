@@ -1,4 +1,4 @@
-function x = fde(N, a, b, l, u)
+function x = fdze(N, a, b, l, u)
 % Design a minimum energy zero-phase order-N filter
 % such that l < |X(exp(jw))| < u for a < w < b
 %
@@ -28,25 +28,22 @@ delta = sparse(N+1, 1, 1.0, 2*N+1, 1);
 
 % Solve
 cvx_begin SDP
-    variable X(N+1, N+1)        hermitian
+    variable x(2*N+1)             complex
     variable Fl(N+1, N+1, M)    hermitian
     variable Gl(N, N, M)        hermitian
     variable Fu(N+1, N+1, M)    hermitian
     variable Gu(N, N, M)        hermitian
-    minimize trace(X)
+    minimize norm(x)
     subject to
         for m = 1:M
-            A*vec(X) - l(m)*delta == A*vec(Fl(:,:,m)) + Bs{m}*vec(Gl(:,:,m))
-            u(m)*delta - A*vec(X) == A*vec(Fu(:,:,m)) + Bs{m}*vec(Gu(:,:,m))
+            x - l(m)*delta == A*vec(Fl(:,:,m)) + Bs{m}*vec(Gl(:,:,m))
+            u(m)*delta - x == A*vec(Fu(:,:,m)) + Bs{m}*vec(Gu(:,:,m))
             Fl(:,:,m) >= 0
             Gl(:,:,m) >= 0
             Fu(:,:,m) >= 0
             Gu(:,:,m) >= 0
         end
-        X >= 0
 cvx_end
-
-x = A*vec(X);
 
 end
 
