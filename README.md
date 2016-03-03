@@ -23,6 +23,23 @@ Output:
       x - Order-N filter
 
 
+
+## mpfd
+Design a minimum-phase order-N filter subject to magnitude response constraints
+
+Inputs:
+
+      N - Filter order.
+      a - Frequency band start points. From -pi to pi.
+      b - Frequency band end points. From -pi to pi.
+      l - Lower bound of magnitude response at frequency bands.
+      u - Upper bound of magnitude response at frequency bands.
+
+      a, b, l, u are length-B vectors where B is the number of bands.
+Output:
+
+      x - Order-N filter
+
 ## pd
 Design a degree-N polynomial that minimizes maximum absolute deviation from the specified magnitude response
 

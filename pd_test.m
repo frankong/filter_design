@@ -13,7 +13,13 @@ v = [0.0,    0.1];
 x = pd(N, a, b, v);
 
 
-%% Plot Magnitude Response 
+%% Plot
+n = 0:N;
+figure, plot(n, real(x), n, imag(x));
+xlabel('n');
+title('Polynomial');
+legend('real','imaginary');
+
 i = 0:N;
 t = linspace(0,1,1000)';
 T = bsxfun(@power, t, i);

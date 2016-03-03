@@ -22,8 +22,8 @@ M = length(a);
 % Construct matrices
 A = amat(N);
 Bs = cell(M,1);
-for m = 1:M
-    Bs{m} = bmat(N, a(m), b(m));
+for c = 1:M
+    Bs{c} = bmat(N, a(c), b(c));
 end
 delta = sparse(1, 1, 1.0, 2*N+1, 1);
 
@@ -37,13 +37,13 @@ cvx_begin SDP
     variable r
     minimize r
     subject to
-        for m = 1:M
-            x - (m(m)-r)*delta == A*vec(Fl(:,:,m)) + Bs{m}*vec(Gl(:,:,m))
-            (m(m)+r)*delta - x == A*vec(Fu(:,:,m)) + Bs{m}*vec(Gu(:,:,m))
-            Fl(:,:,m) >= 0
-            Gl(:,:,m) >= 0
-            Fu(:,:,m) >= 0
-            Gu(:,:,m) >= 0
+        for c = 1:M
+            x - (m(c)-r)*delta == A*vec(Fl(:,:,c)) + Bs{c}*vec(Gl(:,:,c))
+            (m(c)+r)*delta - x == A*vec(Fu(:,:,c)) + Bs{c}*vec(Gu(:,:,c))
+            Fl(:,:,c) >= 0
+            Gl(:,:,c) >= 0
+            Fu(:,:,c) >= 0
+            Gu(:,:,c) >= 0
         end
 cvx_end
 
