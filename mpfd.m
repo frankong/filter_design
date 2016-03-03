@@ -1,4 +1,4 @@
-function x = mpfd(N, a, b, l, u)
+function [x, X] = mpfd(N, a, b, l, u)
 % Design a minimum-phase order-N filter subject to magnitude response constraints
 % 
 % Inputs:
@@ -13,6 +13,7 @@ function x = mpfd(N, a, b, l, u)
 % Output:
 % 
 %       x - Order-N filter
+%       X - Gram matrix of x. Ideally should be x*x'
 
 assert(length(a) == length(b) & length(b) == length(l) & length(l) == length(u));
 M = length(a);
@@ -27,7 +28,6 @@ delta = sparse(N+1, 1, 1.0, 2*N+1, 1);
 
 % Solve
 cvx_begin SDP
-    cvx_precision low
     variable X(N+1, N+1)        semidefinite hermitian     
     variable Fl(N+1, N+1, M)    hermitian
     variable Gl(N, N, M)        hermitian

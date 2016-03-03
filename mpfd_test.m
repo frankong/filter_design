@@ -4,14 +4,14 @@ clear
 close all
 
 %% Minimum Phase Filter Design
-N = 12;
+N = 22;
 
 a = [-pi/2,     -pi,        2*pi/3];
 b = [pi/2,      -2*pi/3,    pi];
-l = [0.9,       0.0,        0.0];
-u = [1.0,       0.1,        0.1];
+l = [0.97,       0.0,        0.0];
+u = [1.0,       0.03,       0.03];
 
-x = mpfd(N, a, b, l, u);
+[x, G] = mpfd(N, a, b, l, u);
 
 %% Plot
 n = 0:N;

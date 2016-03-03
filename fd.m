@@ -26,7 +26,6 @@ delta = sparse(N+1, 1, 1.0, 2*N+1, 1);
 
 % Solve
 cvx_begin SDP
-    cvx_precision low
     variable x(2*N+1)             complex
     variable Fl(N+1, N+1, M)    hermitian
     variable Gl(N, N, M)        hermitian

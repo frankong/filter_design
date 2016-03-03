@@ -8,9 +8,9 @@ N = 12;
 
 a = [-pi/2,     -pi,        2*pi/3];
 b = [pi/2,      -2*pi/3,    pi];
-v = [1.0,       0.0,        0.0];
+m = [1.0,       0.0,        0.0];
 
-x = fd(N, a, b, v);
+x = fd(N, a, b, m);
 
 %% Plot Magnitude Response 
 w = linspace(-pi, pi, 1000);

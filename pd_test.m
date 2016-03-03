@@ -4,10 +4,10 @@ clear
 close all
 
 %% Polynomial Design
-N = 12;
+N = 22;
 
-a = [0.0,    0.7];
-b = [0.3,    1.0];
+a = [0.0,    0.5];
+b = [0.4,    1.0];
 v = [0.0,    0.1];
 
 x = pd(N, a, b, v);
