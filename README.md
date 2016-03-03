@@ -1,40 +1,41 @@
-# Filter design using SDP
+# Filter / Polynomial design using SDP
 
-This package solves the one-dimensional filter design problem via a semidefinite program formulation.
-The SDP is then solved using CVX. 
+This software package designs one-dimensional filters/polynomials via a semidefinite program formulation, following Bumitrescu's book [1].
+The SDP formulation allows us to solve the problem without discretizing the frequency / polynomial.
+This allows us to specify arbitrarily fine starting points and end points of the bands.
+The SDP is solved using CVX. 
 
-## fdzr
-Design a zero-phase order-N filter that minimizes ripples
+## fd
+Design a zero-phase order-N filter that minimizes maximum absolute deviation from the specified magnitude response
 
 Inputs:
 
-      N - Filter order
-      a - Frequency bands start point
-      b - Frequency bands end point
-      v - Values at frequency bands
+      N - Filter order.
+      a - Frequency band start points. From -pi to pi.
+      b - Frequency band end points. From -pi to pi.
+      m - Magnitude response at frequency bands.
+
+      a, b, m are length-B vectors where B is the number of bands.
 Output:
 
       x - Order-N filter
 
 
-## fdze
-Design a zero-phase order-N filter subject to bounded constraints
+## pd
+Design a degree-N polynomial that minimizes maximum absolute deviation from the specified magnitude response
 
 Inputs:
 
-      N - Filter order
-      a - Frequency bands start point
-      b - Frequency bands end point
-      l - Lower bounds
-      u - Upper bounds
+      N - Polynomial degree.
+      a - Bands start points. From 0 to 1.
+      b - Bands end points. From 0 to 1.
+      m - Magnitude response at intevals.
+
+      a, b, m are length-B vectors where B is the number of bands.
 Output:
 
       x - Order-N filter
-
-Example: Low pass filter with cutoff pi/2 and 1.0% passband ripple
-
-      x = filt_design(20, -pi/2, pi/2, 0.99, 1.01);
 
 
 ## References
-[1]	B. Dumitrescu, Positive trigonometric polynomials and signal processing applications. 2007.
+[1]	B. Dumitrescu, Positive Trigonometric Polynomials and Signal Processing Applications. Springer Publishing Company, Incorporated, 2007.
