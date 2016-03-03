@@ -1,20 +1,22 @@
-function x = fdte(N, a, b, l, u)
-% Design a order-N polynomial
-% that minimizes energy
-%
+function x = pd(N, a, b, m)
+% Design a degree-N polynomial that minimizes maximum absolute deviation from the specified magnitude response
+% 
 % Inputs:
-%       N - Polynomial degree. Supports only even N
-%       a - Interval start points
-%       b - Interval end points
-%       v - value at intervals
+% 
+%       N - Polynomial degree.
+%       a - Bands start points. From 0 to 1.
+%       b - Bands end points. From 0 to 1.
+%       v - Magnitude response at intevals.
+% 
+%       a, b, v are length-B vectors where B is the number of bands.
 % Output:
-%       x - Order-N polynomial
-%
+% 
+%       x - Order-N filter
 
 assert(mod(N,2) == 0)
 N = N / 2;
 
-assert(length(a) == length(b) & length(b) == length(l) & length(u) == length(l));
+assert(length(a) == length(b) & length(b) == length(m));
 M = length(a);
 
 % Construct matrices
@@ -32,11 +34,12 @@ cvx_begin SDP
     variable Gl(N, N, M)        hermitian
     variable Fu(N+1, N+1, M)    hermitian
     variable Gu(N, N, M)        hermitian
-    minimize norm(x)
+    variable r
+    minimize r
     subject to
         for m = 1:M
-            x - l(m)*delta == A*vec(Fl(:,:,m)) + Bs{m}*vec(Gl(:,:,m))
-            u(m)*delta - x == A*vec(Fu(:,:,m)) + Bs{m}*vec(Gu(:,:,m))
+            x - (m(m)-r)*delta == A*vec(Fl(:,:,m)) + Bs{m}*vec(Gl(:,:,m))
+            (m(m)+r)*delta - x == A*vec(Fu(:,:,m)) + Bs{m}*vec(Gu(:,:,m))
             Fl(:,:,m) >= 0
             Gl(:,:,m) >= 0
             Fu(:,:,m) >= 0

@@ -1,21 +1,19 @@
-function x = fdze(N, a, b, l, u)
-% Design a minimum energy zero-phase order-N filter
-% such that l < |X(exp(jw))| < u for a < w < b
-%
+function x = fd(N, a, b, v)
+% Design a zero-phase order-N filter that minimizes maximum absolute deviation from the specified magnitude response
+% 
 % Inputs:
-%       N - Filter order
-%       a - Frequency bands start point
-%       b - Frequency bands end point
-%       l - Lower bound
-%       u - Upper bound
+% 
+%       N - Filter order.
+%       a - Frequency band start points. From -pi to pi.
+%       b - Frequency band end points. From -pi to pi.
+%       m - Magnitude response at frequency bands.
+% 
+%       a, b, m are length-B vectors where B is the number of bands.
 % Output:
+% 
 %       x - Order-N filter
-%
-% Example:
-%       Low pass filter with cutoff pi/2 and 1.0% passband ripple
-%       x = filt_design(20, -pi/2, pi/2, 0.99, 1.01);
 
-assert(length(a) == length(b) & length(b) == length(l) & length(l) == length(u));
+assert(length(a) == length(b) & length(b) == length(v));
 M = length(a);
 
 % Construct matrices
@@ -33,11 +31,12 @@ cvx_begin SDP
     variable Gl(N, N, M)        hermitian
     variable Fu(N+1, N+1, M)    hermitian
     variable Gu(N, N, M)        hermitian
-    minimize norm(x)
+    variable r
+    minimize r
     subject to
         for m = 1:M
-            x - l(m)*delta == A*vec(Fl(:,:,m)) + Bs{m}*vec(Gl(:,:,m))
-            u(m)*delta - x == A*vec(Fu(:,:,m)) + Bs{m}*vec(Gu(:,:,m))
+            x - (v(m)-r)*delta == A*vec(Fl(:,:,m)) + Bs{m}*vec(Gl(:,:,m))
+            (v(m)+r)*delta - x == A*vec(Fu(:,:,m)) + Bs{m}*vec(Gu(:,:,m))
             Fl(:,:,m) >= 0
             Gl(:,:,m) >= 0
             Fu(:,:,m) >= 0
