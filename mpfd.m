@@ -1,30 +1,29 @@
-function [x, X] = mpfd(N, a, b, l, u)
-% Design a minimum-phase order-N filter subject to magnitude response constraints
+function [x, X] = mpfd(N, a, b, m)
+% Design a minimum-phase order-N filter that minimizes maximum absolute deviation from the specified magnitude response
 % 
 % Inputs:
 % 
 %       N - Filter order.
 %       a - Frequency band start points. From -pi to pi.
 %       b - Frequency band end points. From -pi to pi.
-%       l - Lower bound of magnitude response at frequency bands.
-%       u - Upper bound of magnitude response at frequency bands.
+%       m - Magnitude response at frequency bands.
 % 
-%       a, b, l, u are length-B vectors where B is the number of bands.
+%       a, b, and m are length-B vectors where B is the number of bands.
 % Output:
 % 
 %       x - Order-N filter
 %       X - Gram matrix of x. Ideally should be x*x'
 
-assert(length(a) == length(b) & length(b) == length(l) & length(l) == length(u));
+assert(length(a) == length(b) & length(b) == length(m));
 M = length(a);
 
 % Construct matrices
 A = amat(N);
 Bs = cell(M,1);
-for m = 1:M
-    Bs{m} = bmat(N, a(m), b(m));
+for i = 1:M
+    Bs{i} = bmat(N, a(i), b(i));
 end
-delta = sparse(N+1, 1, 1.0, 2*N+1, 1);
+dirac = sparse(N+1, 1, 1.0, 2*N+1, 1);
 
 % Solve
 cvx_begin SDP
@@ -33,20 +32,22 @@ cvx_begin SDP
     variable Gl(N, N, M)        hermitian
     variable Fu(N+1, N+1, M)    hermitian
     variable Gu(N, N, M)        hermitian
-    maximize X(1,1)
+    variable d
+    minimize d - 0.001*X(1,1)
     subject to
-        for m = 1:M
-            A*vec(X) - l(m)^2*delta == A*vec(Fl(:,:,m)) + Bs{m}*vec(Gl(:,:,m))
-            u(m)^2*delta - A*vec(X) == A*vec(Fu(:,:,m)) + Bs{m}*vec(Gu(:,:,m))
-            Fl(:,:,m) >= 0
-            Gl(:,:,m) >= 0
-            Fu(:,:,m) >= 0
-            Gu(:,:,m) >= 0
+        for i = 1:M
+            A*vec(X) - (m(i)^2 - d)*dirac == A*vec(Fl(:,:,i)) + Bs{i}*vec(Gl(:,:,i))
+            (m(i)^2 + d)*dirac - A*vec(X) == A*vec(Fu(:,:,i)) + Bs{i}*vec(Gu(:,:,i))
+            Fl(:,:,i) >= 0
+            Gl(:,:,i) >= 0
+            Fu(:,:,i) >= 0
+            Gu(:,:,i) >= 0
         end
+        d >= 0
 cvx_end
 
-[v,d] = eig(X);
-x = d(end,end) * v(:,end);
+[v,s] = eig(X);
+x = s(end,end) * v(:,end);
 
 end
 

@@ -6,12 +6,11 @@ close all
 %% Minimum Phase Filter Design
 N = 22;
 
-a = [-pi/2,     -pi,        2*pi/3];
-b = [pi/2,      -2*pi/3,    pi];
-l = [0.97,       0.0,        0.0];
-u = [1.0,       0.03,       0.03];
+a = [-0.5,     -1.0,       0.6] * pi;
+b = [0.5,      -0.6,       1.0] * pi;
+m = [1.0,       0.0,        0.0];
 
-[x, G] = mpfd(N, a, b, l, u);
+[x, G] = mpfd(N, a, b, m);
 
 %% Plot
 n = 0:N;

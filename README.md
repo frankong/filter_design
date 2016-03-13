@@ -3,7 +3,7 @@
 This MATLAB software package designs one-dimensional filters/polynomials via a semi-definite program formulation, following Bumitrescu's book [1].
 
 The SDP formulation solves the problem without discretizing the frequency / polynomial.
-This allows us to specify arbitrarily fine starting points and end points of the bands.
+Hence, it allows us to specify arbitrarily fine frequency bands.
 
 The SDP is solved using CVX. 
 
@@ -17,7 +17,7 @@ Inputs:
       b - Frequency band end points. From -pi to pi.
       m - Magnitude response at frequency bands.
 
-      a, b, m are length-B vectors where B is the number of bands.
+      a, b, and m are length-B vectors where B is the number of bands.
 Output:
 
       x - Order-N filter
@@ -25,23 +25,24 @@ Output:
 
 
 ## mpfd
-Design a minimum-phase order-N filter subject to magnitude response constraints
+Design a minimum-phase order-N filter that minimizes maximum absolute deviation from the specified magnitude response
 
 Inputs:
 
       N - Filter order.
       a - Frequency band start points. From -pi to pi.
       b - Frequency band end points. From -pi to pi.
-      l - Lower bound of magnitude response at frequency bands.
-      u - Upper bound of magnitude response at frequency bands.
+      m - Magnitude response at frequency bands.
 
-      a, b, l, u are length-B vectors where B is the number of bands.
+      a, b, and m are length-B vectors where B is the number of bands.
 Output:
 
       x - Order-N filter
+      X - Gram matrix of x. Ideally should be x*x'
+
 
 ## pd
-Design a degree-N polynomial that minimizes maximum absolute deviation from the specified magnitude response
+Design a degree-2N polynomial that minimizes maximum absolute deviation from the specified magnitude response
 
 Inputs:
 
@@ -50,10 +51,10 @@ Inputs:
       b - Bands end points. From 0 to 1.
       m - Magnitude response at intevals.
 
-      a, b, m are length-B vectors where B is the number of bands.
+      a, b, and m are length-B vectors where B is the number of bands.
 Output:
 
-      x - Order-N filter
+      x - Degree-2N polynomial
 
 
 ## References

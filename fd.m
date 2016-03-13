@@ -19,10 +19,10 @@ M = length(a);
 % Construct matrices
 A = amat(N);
 Bs = cell(M,1);
-for c = 1:M
-    Bs{c} = bmat(N, a(c), b(c));
+for i = 1:M
+    Bs{i} = bmat(N, a(i), b(i));
 end
-delta = sparse(N+1, 1, 1.0, 2*N+1, 1);
+dirac = sparse(N+1, 1, 1.0, 2*N+1, 1);
 
 % Solve
 cvx_begin SDP
@@ -31,17 +31,18 @@ cvx_begin SDP
     variable Gl(N, N, M)        hermitian
     variable Fu(N+1, N+1, M)    hermitian
     variable Gu(N, N, M)        hermitian
-    variable r
-    minimize r
+    variable d
+    minimize d
     subject to
-        for c = 1:M
-            x - (m(c)-r)*delta == A*vec(Fl(:,:,c)) + Bs{c}*vec(Gl(:,:,c))
-            (m(c)+r)*delta - x == A*vec(Fu(:,:,c)) + Bs{c}*vec(Gu(:,:,c))
-            Fl(:,:,c) >= 0
-            Gl(:,:,c) >= 0
-            Fu(:,:,c) >= 0
-            Gu(:,:,c) >= 0
+        for i = 1:M
+            x - (m(i)-d)*dirac == A*vec(Fl(:,:,i)) + Bs{i}*vec(Gl(:,:,i))
+            (m(i)+d)*dirac - x == A*vec(Fu(:,:,i)) + Bs{i}*vec(Gu(:,:,i))
+            Fl(:,:,i) >= 0
+            Gl(:,:,i) >= 0
+            Fu(:,:,i) >= 0
+            Gu(:,:,i) >= 0
         end
+        d >= 0
 cvx_end
 
 end

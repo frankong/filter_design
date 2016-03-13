@@ -1,20 +1,17 @@
 function x = pd(N, a, b, m)
-% Design a degree-N polynomial that minimizes maximum absolute deviation from the specified magnitude response
+% Design a degree-2N polynomial that minimizes maximum absolute deviation from the specified magnitude response
 % 
 % Inputs:
 % 
 %       N - Polynomial degree.
 %       a - Bands start points. From 0 to 1.
 %       b - Bands end points. From 0 to 1.
-%       v - Magnitude response at intevals.
+%       m - Magnitude response at intevals.
 % 
-%       a, b, v are length-B vectors where B is the number of bands.
+%       a, b, m are length-B vectors where B is the number of bands.
 % Output:
 % 
 %       x - Order-N filter
-
-assert(mod(N,2) == 0)
-N = N / 2;
 
 assert(length(a) == length(b) & length(b) == length(m));
 M = length(a);
@@ -22,10 +19,10 @@ M = length(a);
 % Construct matrices
 A = amat(N);
 Bs = cell(M,1);
-for c = 1:M
-    Bs{c} = bmat(N, a(c), b(c));
+for i = 1:M
+    Bs{i} = bmat(N, a(i), b(i));
 end
-delta = sparse(1, 1, 1.0, 2*N+1, 1);
+dirac = sparse(1, 1, 1.0, 2*N+1, 1);
 
 % Solve
 cvx_begin SDP
@@ -37,13 +34,13 @@ cvx_begin SDP
     variable r
     minimize r
     subject to
-        for c = 1:M
-            x - (m(c)-r)*delta == A*vec(Fl(:,:,c)) + Bs{c}*vec(Gl(:,:,c))
-            (m(c)+r)*delta - x == A*vec(Fu(:,:,c)) + Bs{c}*vec(Gu(:,:,c))
-            Fl(:,:,c) >= 0
-            Gl(:,:,c) >= 0
-            Fu(:,:,c) >= 0
-            Gu(:,:,c) >= 0
+        for i = 1:M
+            x - (m(i)-r)*dirac == A*vec(Fl(:,:,i)) + Bs{i}*vec(Gl(:,:,i))
+            (m(i)+r)*dirac - x == A*vec(Fu(:,:,i)) + Bs{i}*vec(Gu(:,:,i))
+            Fl(:,:,i) >= 0
+            Gl(:,:,i) >= 0
+            Fu(:,:,i) >= 0
+            Gu(:,:,i) >= 0
         end
 cvx_end
 
