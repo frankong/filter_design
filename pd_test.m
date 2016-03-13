@@ -4,7 +4,7 @@ clear
 close all
 
 %% Polynomial Design
-N = 11;
+N = 22;
 
 a = [0.0,    0.5];
 b = [0.4,    1.0];

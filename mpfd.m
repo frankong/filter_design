@@ -47,7 +47,8 @@ cvx_begin SDP
 cvx_end
 
 [v,s] = eig(X);
-x = s(end,end) * v(:,end);
+[y,i] = max(diag(s));
+x = sqrt(s(i,i)) * v(:,i);
 
 end
 

@@ -6,8 +6,8 @@ close all
 %% Minimum Phase Filter Design
 N = 22;
 
-a = [-0.5,     -1.0,       0.6] * pi;
-b = [0.5,      -0.6,       1.0] * pi;
+a = [-0.5,     -1.0,       0.7] * pi;
+b = [0.5,      -0.7,       1.0] * pi;
 m = [1.0,       0.0,        0.0];
 
 [x, G] = mpfd(N, a, b, m);
