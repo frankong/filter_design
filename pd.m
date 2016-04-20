@@ -11,32 +11,43 @@ function x = pd(N, a, b, m)
 %       a, b, m are length-B vectors where B is the number of bands.
 % Output:
 % 
-%       x - Order-N filter
+%       x - Degree N polynomial
+%
+% Reference:
+% Page 11 eq 1.30 and 1.31 in Dumitrescu 2007
 
 assert(length(a) == length(b) & length(b) == length(m));
 M = length(a);
+n = floor(N/2);
+e = mod(N,2) == 0;
 
 % Construct matrices
-A = amat(N);
+As = cell(M,1);
 Bs = cell(M,1);
 for i = 1:M
-    Bs{i} = bmat(N, a(i), b(i));
+    if e
+        As{i} = aemat(n);
+        Bs{i} = bemat(n, a(i), b(i));
+    else
+        As{i} = aomat(n, a(i));
+        Bs{i} = bomat(n, b(i));
+    end
 end
-dirac = sparse(1, 1, 1.0, 2*N+1, 1);
+dirac = sparse(1, 1, 1.0, N+1, 1);
 
 % Solve
 cvx_begin SDP
-    variable x(2*N+1)             complex
-    variable Fl(N+1, N+1, M)    hermitian
-    variable Gl(N, N, M)        hermitian
-    variable Fu(N+1, N+1, M)    hermitian
-    variable Gu(N, N, M)        hermitian
+    variable x(N+1)             complex
+    variable Fl(n+1, n+1, M)    hermitian
+    variable Gl(n-e+1, n-e+1, M)        hermitian
+    variable Fu(n+1, n+1, M)    hermitian
+    variable Gu(n-e+1, n-e+1, M)        hermitian
     variable r
     minimize r
     subject to
         for i = 1:M
-            x - (m(i)-r)*dirac == A*vec(Fl(:,:,i)) + Bs{i}*vec(Gl(:,:,i))
-            (m(i)+r)*dirac - x == A*vec(Fu(:,:,i)) + Bs{i}*vec(Gu(:,:,i))
+            x - (m(i)-r)*dirac == As{i}*vec(Fl(:,:,i)) + Bs{i}*vec(Gl(:,:,i))
+            (m(i)+r)*dirac - x == As{i}*vec(Fu(:,:,i)) + Bs{i}*vec(Gu(:,:,i))
             Fl(:,:,i) >= 0
             Gl(:,:,i) >= 0
             Fu(:,:,i) >= 0
@@ -46,50 +57,97 @@ cvx_end
 
 end
 
-function A = amat(N)
-si = zeros((N+1)^2,1);
-sj = zeros((N+1)^2,1);
-ss = zeros((N+1)^2,1);
-
-c = 1;
-for i = 0:N
-    for j = 0:N
-        si(c) = i + j + 1;
-        sj(c) = (i+1) + j * (N+1);
-        ss(c) = 1.0;
-        c = c + 1;
+function A = aemat(n)
+    si = zeros((n+1)^2,1);
+    sj = zeros((n+1)^2,1);
+    ss = zeros((n+1)^2,1);
+    
+    c = 1;
+    for i = 0:n
+        for j = 0:n
+            si(c) = i + j + 1;
+            sj(c) = (i+1) + j * (n+1);
+            ss(c) = 1.0;
+            c = c + 1;
+        end
     end
+    A = sparse(si, sj, ss, 2*n+1, (n+1)^2);
 end
-A = sparse(si, sj, ss, 2*N+1, (N+1)^2);
-end
 
-
-function B = bmat(N, a, b)
-
-si = zeros(3*N^2,1);
-sj = zeros(3*N^2,1);
-ss = zeros(3*N^2,1);
+function B = bemat(n, a, b)
+si = zeros(3*n^2,1);
+sj = zeros(3*n^2,1);
+ss = zeros(3*n^2,1);
 
 c = 1;
-for i = 0:N-1
-    for j = 0:N-1
+for i = 0:n-1
+    for j = 0:n-1
         si(c) = i + j + 1;
-        sj(c) = (i+1) + j * N;
+        sj(c) = (i+1) + j * n;
         ss(c) = -a*b;
         c = c + 1;
         
         
         si(c) = i + j + 1 + 1;
-        sj(c) = (i+1) + j * N;
+        sj(c) = (i+1) + j * n;
         ss(c) = a+b;
         c = c + 1;
         
         
         si(c) = i + j + 1 + 2;
-        sj(c) = (i+1) + j * N;
+        sj(c) = (i+1) + j * n;
         ss(c) = -1;
         c = c + 1;
     end
 end
-B = sparse(si, sj, ss, 2*N+1, N^2);
+B = sparse(si, sj, ss, 2*n+1, n^2);
+end
+
+
+    
+function A = aomat(n, a)
+    si = zeros(2*(n+1)^2,1);
+    sj = zeros(2*(n+1)^2,1);
+    ss = zeros(2*(n+1)^2,1);
+    
+    c = 1;
+    for i = 0:n
+        for j = 0:n
+            si(c) = i + j + 1;
+            sj(c) = (i+1) + j * (n+1);
+            ss(c) = -a;
+            c = c + 1;
+            
+            
+            si(c) = i + j + 1 + 1;
+            sj(c) = (i+1) + j * (n+1);
+            ss(c) = 1;
+            c = c + 1;
+        end
+    end
+    A = sparse(si, sj, ss, 2*n+2, (n+1)^2);
+end
+
+
+function B = bomat(n, b)
+    si = zeros(2*(n+1)^2,1);
+    sj = zeros(2*(n+1)^2,1);
+    ss = zeros(2*(n+1)^2,1);
+    
+    c = 1;
+    for i = 0:n
+        for j = 0:n
+            si(c) = i + j + 1;
+            sj(c) = (i+1) + j * (n+1);
+            ss(c) = b;
+            c = c + 1;
+            
+            
+            si(c) = i + j + 1 + 1;
+            sj(c) = (i+1) + j * (n+1);
+            ss(c) = -1;
+            c = c + 1;
+        end
+    end
+    B = sparse(si, sj, ss, 2*n+2, (n+1)^2);
 end

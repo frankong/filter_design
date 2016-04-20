@@ -4,7 +4,7 @@ clear
 close all
 
 %% Polynomial Design
-N = 22;
+N = 10;
 
 a = [0.0,    0.5];
 b = [0.4,    1.0];
@@ -14,13 +14,13 @@ x = pd(N, a, b, m);
 
 
 %% Plot
-n = 0:2*N;
+n = 0:N;
 figure, plot(n, real(x), n, imag(x));
 xlabel('n');
 title('Polynomial');
 legend('real','imaginary');
 
-i = 0:2*N;
+i = 0:N;
 t = linspace(0,1,1000)';
 T = bsxfun(@power, t, i);
 X = T * x;

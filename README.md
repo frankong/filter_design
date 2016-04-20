@@ -42,7 +42,7 @@ Output:
 
 
 ## pd
-Design a degree-2N polynomial that minimizes maximum absolute deviation from the specified magnitude response
+Design a degree-N polynomial that minimizes maximum absolute deviation from the specified magnitude response
 
 Inputs:
 
@@ -54,7 +54,7 @@ Inputs:
       a, b, and m are length-B vectors where B is the number of bands.
 Output:
 
-      x - Degree-2N polynomial
+      x - Degree-N polynomial
 
 
 ## References

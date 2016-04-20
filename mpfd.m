@@ -33,7 +33,7 @@ cvx_begin SDP
     variable Fu(N+1, N+1, M)    hermitian
     variable Gu(N, N, M)        hermitian
     variable d
-    minimize d - 0.001*X(1,1)
+    minimize d - 0.0001*X(1,1)
     subject to
         for i = 1:M
             A*vec(X) - (m(i)^2 - d)*dirac == A*vec(Fl(:,:,i)) + Bs{i}*vec(Gl(:,:,i))
